@@ -1,6 +1,6 @@
-# Run GitHub CI in DragonflyBSD 
+# Run GitHub CI in HardenedBSD 
 
-![Test](https://github.com/vmactions/dragonflybsd-vm/workflows/Test/badge.svg)
+![Test](https://github.com/vmactions/hardenedbsd-vm/workflows/Test/badge.svg)
 
 
 
@@ -15,7 +15,7 @@ Powered by [AnyVM.org](https://anyvm.org)
 >
 > These VMs are now AI-ready. With the **[vmactions-ci skill](https://github.com/vmactions/vmactions-skill)**, an AI coding agent -- Claude Code, Codex, Copilot CLI, Gemini CLI, and others -- understands the full vmactions interface and writes the GitHub Actions CI for you, **automatically**.
 >
-> Just describe what you want in plain language, e.g. *"run my tests on DragonflyBSD"* or *"check that my project builds on DragonflyBSD aarch64"*, and the agent generates a correct, ready-to-commit `test.yml`. It will:
+> Just describe what you want in plain language, e.g. *"run my tests on HardenedBSD"* or *"check that my project builds on HardenedBSD aarch64"*, and the agent generates a correct, ready-to-commit `test.yml`. It will:
 >
 > - pick the right action, `release`, and `arch` for your target;
 > - install your toolchain and dependencies in the `prepare` step;
@@ -27,25 +27,59 @@ Powered by [AnyVM.org](https://anyvm.org)
 >
 > ### >> [Get the vmactions-ci skill](https://github.com/vmactions/vmactions-skill) <<
 
-Use this action to run your CI in DragonflyBSD.
+Use this action to run your CI in HardenedBSD.
 
-The github workflow only supports Ubuntu, Windows and MacOS. But what if you need to use DragonflyBSD?
+The github workflow only supports Ubuntu, Windows and MacOS. But what if you need to use HardenedBSD?
 
 
 All the supported releases are here:
 
 
 
-| Release | x86_64(amd64) |
+| Release | x86_64 |
 |---------|---------|
-| 6.4.2 | ✅ (rsync,scp,nfs,tar) |
-| 6.4.1 | ✅ (rsync,scp,nfs,tar) |
-| 6.4.0 | ✅ (rsync,scp,nfs,tar) |
+| 15 | ✅ (rsync,scp,sshfs,nfs,tar) |
 
-<!-- arch-label: x86_64 = x86_64(amd64) -->
-Note: sshfs is not offered on DragonFlyBSD -- the sshfs (FUSE) mount is
-read-only in practice (the guest can read the shared dir, but writing a file
-back into the mount fails), so only rsync / scp / nfs are listed.
+<!-- shelved: 14 -->
+
+amd64 only: HardenedBSD builds no other architecture, and it publishes
+installer ISOs rather than VM images, so this builder takes the ISO path.
+
+Release `15` is HardenedBSD's 15-STABLE branch. It follows that branch's
+rolling `LATEST` installer -- upstream publishes `build-N` directories and
+moves `LATEST` to the newest -- so an image is a snapshot of the branch at
+build time, not a fixed upstream version, the same way nextbsd-builder tracks
+a `continuous` tag.
+
+Release 14 is deliberately absent. Upstream has moved on from it: the newest
+14-STABLE installer is build-33 from 2025-12-17 and has not been rebuilt
+since, and the matching package repository is gone --
+`pkg.hardenedbsd.org/HardenedBSD/pkg/FreeBSD:14:amd64/` returns 404 while
+`:15:` and `:16:` answer, so a 14 guest cannot even bootstrap `pkg`. Only
+15-STABLE and current are maintained. `conf/hardenedbsd-14.conf` is kept on
+disk with the details rather than deleted, so this does not have to be
+rediscovered.
+
+The installer ISO is VGA-only upstream (a stock boot produces zero bytes on
+COM1), so `hooks/host_beforeBuild.py` remixes it with a serial console before
+the build starts, and bakes the distribution sets into `/usr/freebsd-dist` on
+that ISO so bsdinstall never fetches over the network. That hook documents the
+three traps involved -- xorriso's `replay` silently dropping the El Torito
+record, the ISO volume label being load-bearing for the root mount, and
+`-osirrox` extraction losing root ownership -- each of which produces a broken
+image rather than an error.
+
+How the images are built:
+
+Each image is built automatically in the
+[anyvm-org/hardenedbsd-builder](https://github.com/anyvm-org/hardenedbsd-builder)
+repo's GitHub Actions: it downloads the official HardenedBSD installer
+ISO, remixes it for a serial console, boots it in QEMU, answers the
+installer unattended, enables ssh, pre-installs the packages listed in
+the conf, and exports the installed disk as a compressed qcow2 image.
+
+Upstream install media: the official HardenedBSD installers from
+https://installers.hardenedbsd.org/pub/.
 
 
 
@@ -62,15 +96,15 @@ on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: A job to run test in DragonflyBSD
+    name: A job to run test in HardenedBSD
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
     steps:
     - uses: actions/checkout@v7
-    - name: Test in DragonflyBSD
+    - name: Test in HardenedBSD
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -82,7 +116,9 @@ jobs:
           whoami
           env
           uname -a
+          nproc
           echo "OK"
+
 
 
 
@@ -90,7 +126,7 @@ jobs:
 ```
 
 
-The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.3.2`)  
+The latest major version is: `v0`, which is the most recommended to use. (You can also use the latest full version: `v0.0.0`)  
 
 
 If you are migrating from the previous `v0`, please change the `runs-on: ` to `runs-on: ubuntu-latest`
@@ -127,7 +163,7 @@ The code is shared from the host to the VM via `rsync` by default, you can choos
 
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         sync: sshfs  # or: nfs
 
@@ -149,7 +185,7 @@ When using `rsync` or `scp`,  you can define `copyback: false` to not copy files
 
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         sync: rsync
         copyback: false
@@ -172,7 +208,7 @@ You can add NAT port between the host and the VM.
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         nat: |
           "8080": "80"
@@ -191,7 +227,7 @@ The default memory of the VM is 6144MB, you can use `mem` option to set the memo
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         mem: 4096
 ...
@@ -205,7 +241,7 @@ The VM is using all the cpu cores of the host by default, you can use `cpu` opti
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         cpu: 3
 ...
@@ -214,31 +250,18 @@ The VM is using all the cpu cores of the host by default, you can use `cpu` opti
 
 ## 5. Select release
 
-It uses [the DragonflyBSD 6.4.2](conf/default.release.conf) by default, you can use `release` option to use another version of DragonflyBSD:
+It uses [the HardenedBSD 15](conf/default.release.conf) by default, you can use `release` option to use another version of HardenedBSD:
 
 ```yaml
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
-        release: "6.4.0"
+        release: "15"
 ...
 ```
 
-You can also give only the leading, `.` separated part of a release. The newest release that starts with it is used, so the workflow does not have to be edited for every point release:
-
-```yaml
-...
-    - name: Test
-      id: test
-      uses: vmactions/dragonflybsd-vm@v1
-      with:
-        release: "6"
-...
-```
-
-Here `release: "6"` runs the newest `6.x` release of DragonflyBSD. Give more parts to narrow it down: `release: "6.4"` runs the newest `6.4.x`. Each part you give has to match in full, so a release that does not exist fails the job instead of quietly falling back to another one.
 
 ## 6. Select architecture
 
@@ -248,7 +271,7 @@ The vm is using x86_64(AMD64) by default, but you can use `arch` option to chang
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         arch: aarch64
 ...
@@ -270,16 +293,16 @@ Support custom shell:
     - uses: actions/checkout@v7
     - name: Start VM
       id: vm
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         sync: nfs
     - name: Custom shell step 1
-      shell: dragonflybsd {0}
+      shell: hardenedbsd {0}
       run: |
         pwd
         echo "this is step 1, running inside the VM"
     - name: Custom shell step 2
-      shell: dragonflybsd {0}
+      shell: hardenedbsd {0}
       run: |
         pwd
         echo "this is step 2, running inside the VM"
@@ -301,7 +324,7 @@ You can also use `custom-shell-name` to set a custom name for the shell wrapper:
     - uses: actions/checkout@v7
     - name: Start VM
       id: vm
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         sync: nfs
         custom-shell-name: vmsh
@@ -327,7 +350,7 @@ If the time in VM is not correct, You can use `sync-time` option to synchronize 
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         sync-time: true
 ...
@@ -342,7 +365,7 @@ By default, the action caches `apt` packages on the host and VM images/artifacts
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         disable-cache: true
 ...
@@ -357,7 +380,7 @@ The `prepare` step (installing packages etc.) normally runs on every build. With
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         cache-after-prepare: true
         prepare: |
@@ -390,7 +413,7 @@ Then use it in the workflow:
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         debug-on-error: ${{ vars.DEBUG_ON_ERROR }}
 
@@ -403,7 +426,7 @@ You can also set the `vnc-password` parameter to set a custom password to protec
 ...
     - name: Test
       id: test
-      uses: vmactions/dragonflybsd-vm@v1
+      uses: vmactions/hardenedbsd-vm@v0
       with:
         debug-on-error: ${{ vars.DEBUG_ON_ERROR }}
         vnc-password: ${{ secrets.VNC_PASSWORD }}
@@ -420,7 +443,7 @@ See more: [debug on error](https://github.com/vmactions/.github/wiki/debug%E2%80
 
 # Under the hood
 
-We use Qemu to run the DragonflyBSD VM.
+We use Qemu to run the HardenedBSD VM.
 
 
 
