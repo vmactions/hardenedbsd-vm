@@ -1,6 +1,6 @@
 {
   "name": "vmactions-HardenedBSD",
-  "version": "",
+  "version": "1.0.0",
   "description": "GitHub actions for HardenedBSD",
   "type": "module",
   "main": "index.js",
