@@ -127,7 +127,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -295,7 +295,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -471,7 +471,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -603,7 +603,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', 'tar') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         mem: 4096
         debug: true
@@ -670,7 +670,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}', '9p') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         mem: 4096
         debug: true
@@ -790,7 +790,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -885,7 +885,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         prepare: |
           pkg install -y socat
@@ -985,7 +985,7 @@ jobs:
         sparse-checkout-cone-mode: true
     - name: Test in HardenedBSD
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         arch: ${{ matrix.arch }}
         debug: true
@@ -1033,7 +1033,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -1154,7 +1154,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         mem: 4096
         debug: true
@@ -1216,7 +1216,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         mem: 4096
         debug: true
@@ -1296,7 +1296,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         mem: 4096
         debug: true
@@ -1357,7 +1357,7 @@ jobs:
     - name: Test in HardenedBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs","tar"],"aarch64":[],"riscv64":[],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[],"i386":[],"loongarch64":[],"armv7":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         mem: 4096
         debug: true
@@ -1431,7 +1431,7 @@ jobs:
     - name: Test in HardenedBSD
       id: testerr
       continue-on-error: true
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         debug: true
         # A command that EXISTS and fails, rather than `false` or a made-up
@@ -1477,7 +1477,7 @@ jobs:
     - name: Test in HardenedBSD
       id: testpass
       continue-on-error: true
-      uses: vmactions/hardenedbsd-vm@333bb0392fd80d5fd4c710f7e5bca438af7b5804
+      uses: vmactions/hardenedbsd-vm@5f488009763ebc94639d57e7ac1cf6c39cf0c40f
       with:
         debug: true
         # No `true` and no double quotes: this body runs on every guest, and
